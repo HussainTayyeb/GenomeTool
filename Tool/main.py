@@ -39,18 +39,18 @@ with open('Daten/taxdump/nodes.dmp','r') as f:
         inherited_GC_flag = int(linedata[7])
         mitochondrial_genetic_code_id = int(linedata[8])
         inherited_MGC_flag = int(linedata[9])
-        GenBank_hidden_flag = int(linedata[10])
+        genBank_hidden_flag = int(linedata[10])
         hidden_subtree_root = int(linedata[11])
         comments = linedata[12]
 
-        hello = [tax_id,parent_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,GenBank_hidden_flag,hidden_subtree_root,comments]
+        hello = [tax_id,parent_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments]
         maxt = type(tax_id)
         print(maxt)
         """
         c.execute('''
             INSERT INTO Nodes
              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-                 ''',(tax_id,parent_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,GenBank_hidden_flag,hidden_subtree_root,comments))
+                 ''',(tax_id,parent_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))
                 
         conn.commit()
         """
