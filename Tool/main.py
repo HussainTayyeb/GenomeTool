@@ -1,8 +1,17 @@
-# TODO: - read node.dmp file 
-#       - create SQLite (Table: TaxID)
-#       - bind taxID into SQLite
+# TODO: 
+#  ------  1st Instance  -------
+#       - read node.dmp file ✔️
+#       - create SQLite (Table: TaxID) ✔️
+#       - bind taxID into SQLite ✔️
+
+#  ------  2nd Instance  -------
+#       - read from database
+#       - store into a variable
+#       - use a filter 
+#       - use filter show taxID by filter
 
 import sqlite3
+import sys
 
 
 
@@ -24,13 +33,13 @@ c = conn.cursor() # The database will be saved in the location where your 'py' f
  	comments				                -- free-text comments and citations
      """
 
-
+"""
 # read node.dmp file for TaxID
 with open('Daten/taxdump/nodes.dmp','r') as f:
     for line in f:
         linedata = [x.strip() for x in line.split("|")]
         tax_id = int(linedata[0])
-        parent_id = int(linedata[1])
+        parent_tax_id = int(linedata[1])
         rank = linedata[2] #string
         embl_code = linedata[3] #string
         division_id = int(linedata[4])
@@ -43,26 +52,42 @@ with open('Daten/taxdump/nodes.dmp','r') as f:
         hidden_subtree_root = int(linedata[11])
         comments = linedata[12]
 
-        hello = [tax_id,parent_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments]
-        maxt = type(tax_id)
-        print(maxt)
-        """
+        hello = [tax_id,parent_tax_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments]
+        print(rank)
+        #print(maxt)
+    
         c.execute('''
             INSERT INTO Nodes
              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-                 ''',(tax_id,parent_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))
+                 ''',(tax_id,parent_tax_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))
                 
         conn.commit()
+       
         """
-        
 
 
-        
-   # print(f_contents[:1000])
+#  ------  2nd Instance  -------
+#       - read from database
+#       - store into a variable
+#       - use a filter 
+#       - use filter show taxID by filter
 
 
+hel = input("Filtern nach: ")
+b = "{}".format(hel)
+hel2 = input("Wert: ")
+b2 = "'{}'".format(hel2)
+
+showTaxID = c.execute("SELECT tax_id FROM Nodes WHERE {} = {}".format(b,b2)).fetchall()
 
 
+def useFilter(taxID):
+    useFilt = c.execute("SELECT * FROM Nodes WHERE tax_id={}".format(taxID)).fetchall()
+    print(useFilt)
 
+
+for row in showTaxID:
+    data = row[0]
+    useFilter(data)
 
 
