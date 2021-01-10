@@ -16,7 +16,7 @@ citations_dmp = 'Daten/taxdump/citations.dmp'
 accession2taxid_dmp = 'Daten/accession2taxid/nucl_gb.accession2taxid' 
 
 
-"""
+
 # read node.dmp file
 with open(node_dmp,'r') as f:
     for line in f:
@@ -150,4 +150,3 @@ with open(accession2taxid_dmp,'r') as f:
                  ''',(accession,accession_version,accession_tax_id,accession_GI))
                 
         conn.commit()
-"""
