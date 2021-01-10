@@ -9,4 +9,6 @@ Daten/taxdump/merged.dmp
 Daten/taxdump/names.dmp
 Daten/taxdump/nodes.dmp
 Daten/taxdump/readme.txt
+Daten/accession2taxid/nucl_gb.accession2taxid
+Daten/accession2taxid/README.txt
 GCToolDB.db
