@@ -16,7 +16,6 @@ citations_dmp = 'Daten/taxdump/citations.dmp'
 accession2taxid_dmp = 'Daten/accession2taxid/nucl_gb.accession2taxid' 
 
 
-
 # read node.dmp file
 with open(node_dmp,'r') as f:
     for line in f:
@@ -34,7 +33,6 @@ with open(node_dmp,'r') as f:
         genBank_hidden_flag = linedata[10]
         hidden_subtree_root = linedata[11]
         comments = linedata[12]
-        
         c.execute('''
             INSERT INTO Nodes
              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
@@ -48,14 +46,11 @@ with open(names_dmp,'r') as f:
         tax_id = linedata[0]
         name_txt = linedata[1]
         unique_name = linedata[2]
-        name_class = linedata[3]
-        print(linedata)
-        
+        name_class = linedata[3]       
         c.execute('''
             INSERT INTO Names
              VALUES (?,?,?,?)
-                 ''',(tax_id,name_txt,unique_name,name_class))
-                
+                 ''',(tax_id,name_txt,unique_name,name_class))      
         conn.commit()
 
      
@@ -66,9 +61,7 @@ with open('Daten/taxdump/division.dmp','r') as f:
         division_division_id = linedata[0]
         division_cde = linedata[1]
         divison_name = linedata[2]
-        division_comments = linedata[3]
-        print(linedata)
-       
+        division_comments = linedata[3] 
         c.execute('''
             INSERT INTO Division
              VALUES (?,?,?,?)
@@ -97,7 +90,6 @@ with open(delnodes_dmp,'r') as f:
     for line in f:
         linedata = [x.strip() for x in line.split("|")]
         deleted_tax_id = linedata[0]
-       
         c.execute('''
             INSERT INTO Delnodes
             VALUES ({})'''.format(deleted_tax_id))
@@ -109,7 +101,6 @@ with open(merged_dmp,'r') as f:
         linedata = [x.strip() for x in line.split("|")]
         old_tax_id = linedata[0]
         new_tax_id = linedata[1]
-        print(linedata)
         c.execute('''
             INSERT INTO Merged
             VALUES (?,?)
@@ -143,10 +134,9 @@ with open(accession2taxid_dmp,'r') as f:
         accession_version = linedata[1]
         accession_taxid = linedata[2]
         accession_GI = linedata[3]
-        print(linedata)
         c.execute('''
             INSERT INTO Accession2TaxID
              VALUES (?,?,?,?)
-                 ''',(accession,accession_version,accession_tax_id,accession_GI))
+                 ''',(accession,accession_version,accession_taxid,accession_GI))
                 
         conn.commit()
