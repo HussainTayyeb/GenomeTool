@@ -1,5 +1,5 @@
 # TODO: 
-#  ------  1st Instance  -------
+#  ------ (1) 1st Instance  -------
 #       - read dmp files ✔️
 #       - create SQLite database (Database.py) ✔️
 #       - import data into SQLite DB (DataImport.py) ✔️
@@ -10,11 +10,17 @@
 #       - use a filter ✔️
 #       - use filter show taxID by filter ✔️
 
-#  ------  3nd Instance  -------
+#  ------  3rd Instance  -------
 #       - read from file with accession ID file (DataImport.py) ✔️
 #       - store into a seperate table of DB (DataImport.py)✔️
 #       - read from DB ✔️
 #       - use TaxID from Nodes and apply on the accession ID Table ✔️
+
+#  ------ 4th Instance  -------
+#       - get tax_id from names table 
+#       - use the tax_id from names and search for parents_tax_id in nodes
+#       - retrieve all tax_id from parents_tax_id 
+#       - retrieve in Accession2TaxID all accession from the retrieved tax_id's
 
 
 
@@ -41,7 +47,7 @@ b2 = "'{}'".format(hel2)
 
 showTaxID = c.execute("SELECT tax_id FROM Nodes WHERE {} = {}".format(b,b2)).fetchall()
 
-# get accession value from Accesion2TaxID table over the TAXID from nodes table
+# use TaxID from Nodes and apply on the accession ID Table to get accession ✔️
 def useFilter(taxID):
     useFilt = c.execute("SELECT * FROM Accession2TaxID WHERE accession_tax_id={}".format(taxID)).fetchall()
     for row in useFilt:
@@ -51,4 +57,3 @@ def useFilter(taxID):
 for row in showTaxID:
     data = row[0]
     useFilter(data)
-
