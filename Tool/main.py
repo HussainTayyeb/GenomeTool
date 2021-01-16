@@ -52,12 +52,17 @@ for row in showTaxID:
     data = row[0]
     useFilter(data)
 """""    
+#tax_id from Names -> Parent_tax_id from Nodes = tax_id
+def namesToNodes(taxid):
+    nodes_query = c.execute("SELECT tax_id FROM Nodes WHERE parent_tax_id={}".format(taxid)).fetchall()
+    for each in nodes_query:
+        print(each[0])
 
 name_input = input("Name: ")
 name_value = "{}".format(name_input)
-# ----- SET TO .fetchall()[:2] for testing purposes ------
-names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_value)).fetchall()[:2]
+
+names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_value)).fetchall()
 
 for row in names_taxid:
     data = row[0]
-    print(data)
+    namesToNodes(data)
