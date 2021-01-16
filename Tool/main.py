@@ -17,7 +17,7 @@
 #       - use TaxID from Nodes and apply on the accession ID Table ✔️
 
 #  ------ 4th Instance  -------
-#       - get tax_id from names table with name search
+#       - get tax_id from names table with name search ✔️
 #       - use the tax_id from names and search for parents_tax_id in nodes
 #       - retrieve all tax_id from parents_tax_id 
 #       - retrieve in Accession2TaxID all accession from the retrieved tax_id's
