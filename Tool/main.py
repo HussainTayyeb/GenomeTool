@@ -53,13 +53,21 @@ for row in showTaxID:
     useFilter(data)
 """""    
 taxid_from_namesToNodes = []
+accession_array = []
 #tax_id from Names -> Parent_tax_id from Nodes = tax_id
 def namesToNodes(taxid):
     nodes_query = c.execute("SELECT tax_id FROM Nodes WHERE parent_tax_id={}".format(taxid)).fetchall()
-    for each in nodes_query:
-        node_tax_id = each[0]
+    for id in nodes_query:
+        node_tax_id = id[0]
         taxid_from_namesToNodes.append(node_tax_id)
-        #print(node_tax_id)
+        #print(id)
+
+#tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
+def nodesToAccession (taxid):
+    nodes_query = c.execute("SELECT accession FROM Accession2TaxID WHERE accession_tax_id={}".format(taxid)).fetchall()
+    for acc in nodes_query:
+        data = acc[0]
+        accession_array.append(data)
 
 #testing it with orthopox as input
 name_input = input("Name: ")
@@ -67,9 +75,15 @@ name_value = "{}".format(name_input)
 
 names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_value)).fetchall()
 
+#iterate through name_taxid
 for row in names_taxid:
     data = row[0]
     namesToNodes(data)
 
-for arrayEl in taxid_from_namesToNodes:
-    print(arrayEl)
+#iterate through nodes
+for row in taxid_from_namesToNodes:
+    nodesToAccession(row)
+
+#iterate through accessionarray
+for i in accession_array:
+    print(i)
