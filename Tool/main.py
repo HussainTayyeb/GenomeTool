@@ -10,7 +10,7 @@
 #       - use a filter ✔️
 #       - use filter show taxID by filter ✔️
 
-#  ------  3rd Instance  -------
+#  ------ 3rd Instance  -------
 #       - read from file with accession ID file (DataImport.py) ✔️
 #       - store into a seperate table of DB (DataImport.py)✔️
 #       - read from DB ✔️
@@ -20,7 +20,15 @@
 #       - get tax_id from names table with name search ✔️
 #       - use the tax_id from names and search for parents_tax_id in nodes ✔️
 #       - retrieve all tax_id from parents_tax_id ✔️
-#       - retrieve in Accession2TaxID all accession from the retrieved tax_id's which came from nodes
+#       - retrieve in Accession2TaxID all accession from the retrieved tax_id's which came from nodes ✔️
+
+#  ------ 5th Instance  -------
+#       - slicing accession_array into batches 
+#       - import biopython
+#       - test efetch (9.15.2/9.6) on Biopython documentation by using only 1 accession to download
+#       - parsing handle (9.15.3)  SeqIO.write -> plain text
+#       - apply for batches 
+
 
 
 
@@ -84,6 +92,11 @@ for row in names_taxid:
 for row in taxid_from_namesToNodes:
     nodesToAccession(row)
 
-#iterate through accessionarray
-for i in accession_array:
-    print(i)
+#iterate through accession_array
+for row in accession_array:
+    print(row)
+
+
+print("\nLength of accession array: {}".format(len(accession_array)))
+chunk_input = input("Chunk Size: ")
+print(chunk_input)
