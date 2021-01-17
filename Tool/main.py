@@ -92,11 +92,22 @@ for row in names_taxid:
 for row in taxid_from_namesToNodes:
     nodesToAccession(row)
 
-#iterate through accession_array
-for row in accession_array:
-    print(row)
-
-
-print("\nLength of accession array: {}".format(len(accession_array)))
+#print("\nLength of accession array: {}".format(len(accession_array)))
 chunk_input = input("Chunk Size: ")
-print(chunk_input)
+
+def chunk_list(array, chunk_size):
+    for i in range(0,len(array), chunk_size):
+        yield array[i:i + chunk_size]
+
+chunk_list_array = []
+for i in chunk_list(accession_array,int(chunk_input)):
+    chunk_list_array.append(i)
+
+array_range_input = input("Array Range: ")
+
+for l in chunk_list_array[:int(array_range_input)]:
+    print("------------")
+    print(l)
+    print("-----------")
+    for s in l:
+        print(s)
