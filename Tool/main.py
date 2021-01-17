@@ -62,6 +62,7 @@ for row in showTaxID:
 """""    
 taxid_from_namesToNodes = []
 accession_array = []
+chunk_list_array = []
 #tax_id from Names -> Parent_tax_id from Nodes = tax_id
 def namesToNodes(taxid):
     nodes_query = c.execute("SELECT tax_id FROM Nodes WHERE parent_tax_id={}".format(taxid)).fetchall()
@@ -95,19 +96,20 @@ for row in taxid_from_namesToNodes:
 #print("\nLength of accession array: {}".format(len(accession_array)))
 chunk_input = input("Chunk Size: ")
 
-def chunk_list(array, chunk_size):
-    for i in range(0,len(array), chunk_size):
-        yield array[i:i + chunk_size]
+#slice array into chunks
+def chunk_list(acc_array, chunk_size):
+    for i in range(0,len(acc_array), chunk_size):
+        yield acc_array[i:i + chunk_size]
 
-chunk_list_array = []
-for i in chunk_list(accession_array,int(chunk_input)):
-    chunk_list_array.append(i)
+#calling the function iterating and appending the chunks into the chunk_list_array
+for chunk in chunk_list(accession_array,int(chunk_input)):
+    chunk_list_array.append(chunk)
 
 array_range_input = input("Array Range: ")
 
-for l in chunk_list_array[:int(array_range_input)]:
+for chunk in chunk_list_array[:int(array_range_input)]:
     print("------------")
-    print(l)
+    print(chunk)
     print("-----------")
-    for s in l:
-        print(s)
+    for el in chunk:
+        print(el)
