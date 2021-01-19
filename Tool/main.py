@@ -23,15 +23,16 @@
 #       - retrieve in Accession2TaxID all accession from the retrieved tax_id's which came from nodes ✔️
 
 #  ------ 5th Instance  -------
-#       - slicing accession_array into batches 
-#       - import biopython
-#       - test efetch (9.15.2/9.6) on Biopython documentation by using only 1 accession to download
+#       - slicing accession_array into batches ✔️
+#       - import biopython ✔️
+#       - test efetch (9.15.2/9.6) on Biopython documentation by using only 1 accession to download ✔️
 #       - parsing handle (9.15.3)  SeqIO.write -> plain text
 #       - apply for batches 
 
 
 import sqlite3
 from Bio import Entrez
+from Bio import SeqIO
 
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
@@ -97,18 +98,21 @@ chunk_input = input("Chunk Size: ")
 def chunk_list(acc_array, chunk_size):
     for i in range(0,len(acc_array), chunk_size):
         yield acc_array[i:i + chunk_size]
-
+data = []
 def down(acc):
     Entrez.email = "test@test.de"
     handle = Entrez.efetch(db="nucleotide", id="{}".format(acc), rettype="gb", retmode="text")
-    print(handle.read())
-        
+    records = data.append(SeqIO.parse(handle,"gb"))
+    
+
+    #print(handle.read())   
+
 #calling the function iterating and appending the chunks into the chunk_list_array
 for chunk in chunk_list(accession_array,int(chunk_input)):
     chunk_list_array.append(chunk)
 
+#with how many chunks should be shown/used with array_range_input
 array_range_input = input("Array Range: ")
-
 for chunk in chunk_list_array[:int(array_range_input)]:
     print("------------")
     print(chunk)
@@ -116,3 +120,5 @@ for chunk in chunk_list_array[:int(array_range_input)]:
     for el in chunk:
         down(el)
         print(el)
+        for i in data:
+            SeqIO.write(i, "{}".format(chunk), "gb")
