@@ -31,7 +31,7 @@
 
 
 import sqlite3
-import Bio
+from Bio import Entrez
 
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
@@ -98,6 +98,11 @@ def chunk_list(acc_array, chunk_size):
     for i in range(0,len(acc_array), chunk_size):
         yield acc_array[i:i + chunk_size]
 
+def down(acc):
+    Entrez.email = "test@test.de"
+    handle = Entrez.efetch(db="nucleotide", id="{}".format(acc), rettype="gb", retmode="text")
+    print(handle.read())
+        
 #calling the function iterating and appending the chunks into the chunk_list_array
 for chunk in chunk_list(accession_array,int(chunk_input)):
     chunk_list_array.append(chunk)
@@ -109,4 +114,5 @@ for chunk in chunk_list_array[:int(array_range_input)]:
     print(chunk)
     print("-----------")
     for el in chunk:
+        down(el)
         print(el)
