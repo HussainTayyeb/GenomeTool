@@ -30,11 +30,8 @@
 #       - apply for batches 
 
 
-
-
 import sqlite3
-
-
+import Bio
 
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
