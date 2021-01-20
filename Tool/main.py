@@ -98,12 +98,15 @@ chunk_input = input("Chunk Size: ")
 def chunk_list(acc_array, chunk_size):
     for i in range(0,len(acc_array), chunk_size):
         yield acc_array[i:i + chunk_size]
+        
+#downloader 
 data = []
 def down(acc):
     Entrez.email = "test@test.de"
-    handle = Entrez.efetch(db="nucleotide", id="{}".format(acc), rettype="gb", retmode="text")
-    records = data.append(SeqIO.parse(handle,"gb"))
-    
+    handle = Entrez.efetch(db="nucleotide", id=acc, rettype="gb", retmode="text")
+    #parser
+    records = SeqIO.parse(handle,"gb")
+    data.append(records)
 
     #print(handle.read())   
 
@@ -120,5 +123,6 @@ for chunk in chunk_list_array[:int(array_range_input)]:
     for el in chunk:
         down(el)
         print(el)
+        #for getting the accessions in a chunk as file name
         for i in data:
             SeqIO.write(i, "{}".format(chunk), "gb")
