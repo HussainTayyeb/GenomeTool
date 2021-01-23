@@ -29,7 +29,6 @@
 #       - parsing handle (9.15.3)  SeqIO.write -> plain text
 #       - apply for batches 
 
-
 import sqlite3
 from Bio import Entrez
 from Bio import SeqIO
@@ -37,27 +36,6 @@ from Bio import SeqIO
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
-
-"""
-hel = input("Filtern nach: ")
-b = "{}".format(hel)
-hel2 = input("Wert: ")
-b2 = "'{}'".format(hel2)
-
-showTaxID = c.execute("SELECT tax_id FROM Nodes WHERE {} = {}".format(b,b2)).fetchall()
-
-
-# use TaxID from Nodes and apply on the accession ID Table to get accession ✔️
-def useFilter(taxID):
-    useFilt = c.execute("SELECT * FROM Accession2TaxID WHERE accession_tax_id={}".format(taxID)).fetchall()
-    for row in useFilt:
-        accession_data = row[0]
-        print(accession_data)
-    
-for row in showTaxID:
-    data = row[0]
-    useFilter(data)
-"""""    
 taxid_from_namesToNodes = []
 accession_array = []
 chunk_list_array = []
@@ -67,8 +45,7 @@ def namesToNodes(taxid):
     for id in nodes_query:
         node_tax_id = id[0]
         taxid_from_namesToNodes.append(node_tax_id)
-        #print(id)
-
+   
 #tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
 def nodesToAccession (taxid):
     nodes_query = c.execute("SELECT accession FROM Accession2TaxID WHERE accession_tax_id={}".format(taxid)).fetchall()
@@ -100,15 +77,14 @@ def chunk_list(acc_array, chunk_size):
         yield acc_array[i:i + chunk_size]
         
 #downloader 
-data = []
 def down(acc):
     Entrez.email = "test@test.de"
+    print(acc)
     handle = Entrez.efetch(db="nucleotide", id=acc, rettype="gb", retmode="text")
     #parser
     records = SeqIO.parse(handle,"gb")
-    data.append(records)
-
-    #print(handle.read())   
+    # writing into file
+    SeqIO.write(records, "{}".format(chunk), "gb")
 
 #calling the function iterating and appending the chunks into the chunk_list_array
 for chunk in chunk_list(accession_array,int(chunk_input)):
@@ -118,11 +94,4 @@ for chunk in chunk_list(accession_array,int(chunk_input)):
 array_range_input = input("Array Range: ")
 for chunk in chunk_list_array[:int(array_range_input)]:
     print("------------")
-    print(chunk)
-    print("-----------")
-    for el in chunk:
-        down(el)
-        print(el)
-        #for getting the accessions in a chunk as file name
-        for i in data:
-            SeqIO.write(i, "{}".format(chunk), "gb")
+    down(chunk)
