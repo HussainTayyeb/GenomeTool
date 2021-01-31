@@ -39,13 +39,28 @@ c = conn.cursor() # The database will be saved in the location where your 'py' f
 taxid_from_namesToNodes = []
 accession_array = []
 chunk_list_array = []
+
+
+visited = set() # Set to keep track of visited nodes.
+temporary = []
+def dfs(visited, tax, node):
+    if node not in visited:
+        temporary.append(c.execute("SELECT tax_id FROM Nodes WHERE parent_tax_id={}".format(node)).fetchall())
+        print(node)
+        visited.add(node)
+        for neighbour in tax:
+            #print(neighbour)
+            dfs(visited, tax, neighbour)  
+
+
+"""
 #tax_id from Names -> Parent_tax_id from Nodes = tax_id
 def namesToNodes(taxid):
     nodes_query = c.execute("SELECT tax_id FROM Nodes WHERE parent_tax_id={}".format(taxid)).fetchall()
     for id in nodes_query:
         node_tax_id = id[0]
         taxid_from_namesToNodes.append(node_tax_id)
-   
+"""   
 #tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
 def nodesToAccession (taxid):
     nodes_query = c.execute("SELECT accession FROM Accession2TaxID WHERE accession_tax_id={}".format(taxid)).fetchall()
@@ -58,17 +73,25 @@ name_input = input("Name: ")
 name_value = "{}".format(name_input)
 
 names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_value)).fetchall()
+names_taxid = [[134629]]
 
 #iterate through name_taxid
 for row in names_taxid:
     data = row[0]
-    namesToNodes(data)
+    dfs(visited, taxid_from_namesToNodes, data)        
+
+#loop for the DFS function    
+for temp in temporary:
+    for i in temp:
+        data = i[0]
+        taxid_from_namesToNodes.append(data)
+        dfs(visited, taxid_from_namesToNodes, data)    
 
 #iterate through nodes
 for row in taxid_from_namesToNodes:
+    print(row)
     nodesToAccession(row)
 
-#print("\nLength of accession array: {}".format(len(accession_array)))
 chunk_input = input("Chunk Size: ")
 
 #slice array into chunks
