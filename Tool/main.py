@@ -32,14 +32,25 @@
 import sqlite3
 from Bio import Entrez
 from Bio import SeqIO
+import argparse
 
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
+#python Tool/main.py --name 134629 --chunk 5 --array 5
+parser = argparse.ArgumentParser()
+parser.add_argument('--name', dest='name',type=str,nargs='+')
+parser.add_argument('--chunk', dest='chunk', type=int, nargs=1)
+parser.add_argument('--array', dest='array',type=int,nargs=1)
+
+args = parser.parse_args()
+name_argument = args.name[0]
+chunk_argument = args.chunk[0]
+array_argument = args.array[0]
+
 taxid_from_namesToNodes = []
 accession_array = []
 chunk_list_array = []
-
 
 visited = set() # Set to keep track of visited nodes.
 temporary = []
@@ -51,16 +62,7 @@ def dfs(visited, tax, node):
         for neighbour in tax:
             #print(neighbour)
             dfs(visited, tax, neighbour)  
-
-
-"""
-#tax_id from Names -> Parent_tax_id from Nodes = tax_id
-def namesToNodes(taxid):
-    nodes_query = c.execute("SELECT tax_id FROM Nodes WHERE parent_tax_id={}".format(taxid)).fetchall()
-    for id in nodes_query:
-        node_tax_id = id[0]
-        taxid_from_namesToNodes.append(node_tax_id)
-"""   
+ 
 #tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
 def nodesToAccession (taxid):
     nodes_query = c.execute("SELECT accession FROM Accession2TaxID WHERE accession_tax_id={}".format(taxid)).fetchall()
@@ -68,12 +70,8 @@ def nodesToAccession (taxid):
         data = acc[0]
         accession_array.append(data)
 
-#testing it with orthopox as input
-name_input = input("Name: ")
-name_value = "{}".format(name_input)
-
-names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_value)).fetchall()
-names_taxid = [[134629]]
+#names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_argument)).fetchall()
+names_taxid = [[name_argument]] #134629
 
 #iterate through name_taxid
 for row in names_taxid:
@@ -92,8 +90,6 @@ for row in taxid_from_namesToNodes:
     print(row)
     nodesToAccession(row)
 
-chunk_input = input("Chunk Size: ")
-
 #slice array into chunks
 def chunk_list(acc_array, chunk_size):
     for i in range(0,len(acc_array), chunk_size):
@@ -110,11 +106,10 @@ def down(acc):
     SeqIO.write(records, "{}".format(chunk), "gb")
 
 #calling the function iterating and appending the chunks into the chunk_list_array
-for chunk in chunk_list(accession_array,int(chunk_input)):
+for chunk in chunk_list(accession_array,int(chunk_argument)):
     chunk_list_array.append(chunk)
 
 #with how many chunks should be shown/used with array_range_input
-array_range_input = input("Array Range: ")
-for chunk in chunk_list_array[:int(array_range_input)]:
+for chunk in chunk_list_array[:int(array_argument)]:
     print("------------")
     down(chunk)
