@@ -37,6 +37,7 @@ import argparse
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
+<<<<<<< HEAD
 #python Tool/main.py --name 134629 --chunk 5 --array 5
 parser = argparse.ArgumentParser()
 parser.add_argument('--name', dest='name',type=str,nargs='+')
@@ -63,32 +64,49 @@ def dfs(visited, tax, node):
             #print(neighbour)
             dfs(visited, tax, neighbour)  
  
+=======
+accession_array = []
+chunk_list_array = []
+
+
+def dfs(taxid, aggregation):
+    data = c.execute(f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
+    #if data:
+    #    aggregation.add(taxid)
+    for i in data:
+        #print(i[0])
+        if dfs(i[0],aggregation):
+            aggregation.add(i[0])        
+    return aggregation
+
+>>>>>>> recursion
 #tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
 def nodesToAccession (taxid):
-    nodes_query = c.execute("SELECT accession FROM Accession2TaxID WHERE accession_tax_id={}".format(taxid)).fetchall()
+    nodes_query = c.execute(f"SELECT accession FROM Accession2TaxID WHERE accession_tax_id={taxid}").fetchall()
     for acc in nodes_query:
         data = acc[0]
         accession_array.append(data)
 
+<<<<<<< HEAD
 #names_taxid = c.execute("SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{}%'".format(name_argument)).fetchall()
 names_taxid = [[name_argument]] #134629
+=======
+#testing it with orthopox as input
+name_input = input("Name: ")
+name_value = "{}".format(name_input)
+
+names_taxid = c.execute(f"SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{name_value}%'").fetchall()
+names_taxid = [[134629]]
+>>>>>>> recursion
 
 #iterate through name_taxid
 for row in names_taxid:
     data = row[0]
-    dfs(visited, taxid_from_namesToNodes, data)        
+    aggregation = dfs(data,{data})       
 
-#loop for the DFS function    
-for temp in temporary:
-    for i in temp:
-        data = i[0]
-        taxid_from_namesToNodes.append(data)
-        dfs(visited, taxid_from_namesToNodes, data)    
-
-#iterate through nodes
-for row in taxid_from_namesToNodes:
-    print(row)
-    nodesToAccession(row)
+for id in aggregation:
+    nodesToAccession(id)
+    print(id)
 
 #slice array into chunks
 def chunk_list(acc_array, chunk_size):
