@@ -6,19 +6,18 @@ import argparse
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
-#python Tool/main.py --taxid 134629 --chunk 5 --array 5
+#python Tool/main.py --taxid 134629 --chunk 5
 parser = argparse.ArgumentParser()
 parser.add_argument('--taxid', dest='taxid',type=str,nargs='+')
 parser.add_argument('--chunk', dest='chunk', type=int, nargs=1)
-parser.add_argument('--array', dest='array',type=int,nargs=1)
 
 args = parser.parse_args()
 taxid_argument = args.taxid[0]
 chunk_argument = args.chunk[0]
-array_argument = args.array[0]
 
 accession_array = []
-chunk_list_array = []
+#names_taxid = c.execute(f"SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{name_value}%'").fetchall()
+names_taxid = [[taxid_argument]]
 
 def dfs(taxid, aggregation):
     data = c.execute(f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
@@ -34,14 +33,12 @@ def nodesToAccession (taxid):
         data = acc[0]
         accession_array.append(data)
 
-#names_taxid = c.execute(f"SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{name_value}%'").fetchall()
-names_taxid = [[taxid_argument]]
-
 #iterate through name_taxid
 for row in names_taxid:
     data = row[0]
     aggregation = dfs(data,{data})       
 
+#iterate through the returned 
 for id in aggregation:
     nodesToAccession(id)
     print(id)
@@ -59,13 +56,10 @@ def down(acc):
     #parser
     records = SeqIO.parse(handle,"gb")
     # writing into file
-    SeqIO.write(records, "{}".format(chunk), "gb")
+    SeqIO.write(records, f"{chunk}", "gb")
+
 
 #calling the function iterating and appending the chunks into the chunk_list_array
-for chunk in chunk_list(accession_array,int(chunk_argument)):
-    chunk_list_array.append(chunk)
-
-#with how many chunks should be shown/used with array_range_input
-for chunk in chunk_list_array[:int(array_argument)]:
-    print("------------")
+for chunk in chunk_list(accession_array ,int(chunk_argument)):
     down(chunk)
+
