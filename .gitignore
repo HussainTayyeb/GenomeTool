@@ -13,3 +13,6 @@ Daten/accession2taxid/nucl_gb.accession2taxid
 Daten/accession2taxid/README.txt
 GCToolDB.db
 test.py
+testfilter.py
+Tool/__pycache__/
+.vscode
