@@ -8,7 +8,6 @@ conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changi
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
 """
-
 python Tool/main.py --taxid 134629 
 --chunk 5 --filter filtermax --parameter 238  --filter filtermin --parameter 235  --fileName max1
 """
@@ -22,16 +21,16 @@ parser.add_argument('--fileName')
 
 
 args = parser.parse_args()
-taxid_arg= args.taxid[0]
-chunk_arg = args.chunk[0]
 
-filter_arg = args.filter
-parameter_arg = args.parameter
+taxid_arg= args.taxid[0] #taxid argument
+chunk_arg = args.chunk[0] #argument for chunks 
 
-fileName_arg = args.fileName
+filter_arg = args.filter #arg for func to filter
+parameter_arg = args.parameter #arg for parameter for filter
 
-accession_array = []
-names_taxid = [[taxid_arg]]
+fileName_arg = args.fileName #arg for naming the new fasta file
+
+names_taxid = [[taxid_arg]] #starting tax id
 
 def dfs(taxid, aggregation):
     data = c.execute(f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
@@ -42,20 +41,30 @@ def dfs(taxid, aggregation):
 
 #tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
 def nodesToAccession (taxid):
+    accessions = []
     nodes_query = c.execute(f"SELECT accession FROM Accession2TaxID WHERE accession_tax_id={taxid}").fetchall()
     for acc in nodes_query:
         data = acc[0]
-        accession_array.append(data)
+        accessions.append(data)
+    return accessions
 
-#iterate through name_taxid
-for row in names_taxid:
-    data = row[0]
-    aggregation = dfs(data,{data})       
+#iterate through name_taxid pass starting parameter taxid (i.e 134629)
+def iterateTaxId(taxid):
+    for row in names_taxid:
+        data = row[0]
+        print(data)
+        tree = dfs(data,{data})       
+    return tree
 
-#iterate through the returned 
-for id in aggregation:
-    nodesToAccession(id)
-    print(id)
+#fetched data from iterateTaxid use it to get accessionid
+def getAccessionId(aggregation):
+    accession_array = []
+    for id in aggregation:
+        noa = nodesToAccession(id)
+        print(id)
+        for no in noa:
+            accession_array.append(no)
+    return accession_array
 
 #slice array into chunks
 def chunk_list(acc_array, chunk_size):
@@ -72,30 +81,35 @@ def down(acc):
     # writing into file
     SeqIO.write(records, f"{acc}", "gb")
 
-#calling the function iterating and appending the chunks into the chunk_list_array
+#use the chunk_list function and slice the array filled with Accessionids from getAccessionId
+#and for one chunk use the downloader which takes an array of AccessionID
+#append the chunked name into the filename array for the func fileIterator
+#parameter - chunk_arg takes the argument from user (argparse)
 def chunky(accession_array, chunk_arg):
     filename = []
     for chunk in chunk_list(accession_array ,int(chunk_arg)):
         down(chunk)
         filename.append(chunk)
     return filename
-        
-fileName = chunky(accession_array,chunk_arg)
 
-#function and parameter
+#function and parameter mapps the parsed arguments (--filter --parameter) for fileIterator
 def mapper(filter,parameter):
     func_call = []
     for fil, par in zip(filter, parameter):
         func_call.append((filters[fil],(*par)))
     return func_call
 
-map_func_para = mapper(filter_arg,parameter_arg)
-
-def fileIterator(fileNameArr):
+#gets fileNameArr from chunky (filename array)
+def fileIterator(fileNameArr,mapped_func_para):
     for fileName in fileNameArr:
-        fileParse = fileParser(fileName)
-        end = endProduct(map_func_para,fileParse)
-        writeToFasta(end,fileName_arg)
+        fileParse = fileParser(fileName) #parse to get SeqObjectList
+        end = endProduct(mapped_func_para,fileParse) # mapped = from mapper fileParse = seqObjectList
+        writeToFasta(end,fileName_arg) #writes into fasta
+    print(f"Filtered SeqObj has been written into: {fileName_arg}.fasta")
 
-fileIterator(fileName)
 
+taxid_tree = iterateTaxId(names_taxid)
+accessionid_array = getAccessionId(taxid_tree)
+chunked_FileNames = chunky(accessionid_array,chunk_arg)
+map_func_para = mapper(filter_arg,parameter_arg)
+fileIterator(chunked_FileNames,map_func_para)
