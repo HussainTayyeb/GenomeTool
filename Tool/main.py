@@ -2,30 +2,35 @@ import sqlite3
 from Bio import Entrez
 from Bio import SeqIO
 import argparse
-from filter import filters, writeToFasta
+from filter import filters,fileParser,writeToFasta,endProduct
 
 conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
 c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
 
-#python Tool/main.py --taxid 134629 --chunk 5 --filter filterRange --parameter 130 --fileName Test
-#python Tool/main.py --taxid 134629 --chunk 5
+"""
+
+python Tool/main.py --taxid 134629 
+--chunk 5 --filter filtermax --parameter 238  --filter filtermin --parameter 235  --fileName max1
+"""
 parser = argparse.ArgumentParser()
 parser.add_argument('--taxid', dest='taxid',type=str,nargs='+')
 parser.add_argument('--chunk', dest='chunk', type=int, nargs=1)
-parser.add_argument('--filter', choices=list(filters.keys()))
-parser.add_argument('--parameter', nargs='+')
-parser.add_argument('--fileName', nargs='+')
+
+parser.add_argument('--filter',choices=list(filters.keys()),action='append')
+parser.add_argument('--parameter',action='append',nargs='+')
+parser.add_argument('--fileName')
 
 
 args = parser.parse_args()
 taxid_arg= args.taxid[0]
 chunk_arg = args.chunk[0]
-selectFilter_arg = args.filter
+
+filter_arg = args.filter
 parameter_arg = args.parameter
-fileName_arg = args.fileName[0]
+
+fileName_arg = args.fileName
 
 accession_array = []
-#names_taxid = c.execute(f"SELECT name_tax_id FROM Names WHERE name_txt LIKE '%{name_value}%'").fetchall()
 names_taxid = [[taxid_arg]]
 
 def dfs(taxid, aggregation):
@@ -68,17 +73,29 @@ def down(acc):
     SeqIO.write(records, f"{acc}", "gb")
 
 #calling the function iterating and appending the chunks into the chunk_list_array
-filename = []
 def chunky(accession_array, chunk_arg):
+    filename = []
     for chunk in chunk_list(accession_array ,int(chunk_arg)):
         down(chunk)
         filename.append(chunk)
+    return filename
         
-chunky(accession_array,chunk_arg)
+fileName = chunky(accession_array,chunk_arg)
 
-#print(filename)
-def useFilter(fileNameArr,filterName,filterParameter,newFileName):
+#function and parameter
+def mapper(filter,parameter):
+    func_call = []
+    for fil, par in zip(filter, parameter):
+        func_call.append((filters[fil],(*par)))
+    return func_call
+
+map_func_para = mapper(filter_arg,parameter_arg)
+
+def fileIterator(fileNameArr):
     for fileName in fileNameArr:
-        filters[f"{filterName}"](fileName,*filterParameter,newFileName)
+        fileParse = fileParser(fileName)
+        end = endProduct(map_func_para,fileParse)
+        writeToFasta(end,fileName_arg)
 
-useFilter(filename,selectFilter_arg,parameter_arg,fileName_arg)
+fileIterator(fileName)
+

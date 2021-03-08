@@ -2,27 +2,38 @@ import sqlite3
 from Bio import Entrez
 from Bio import SeqIO
 from Bio.Seq import Seq
-import argparse
 
+def fileParser(file):
+    seqObjlist = SeqIO.parse(f"{file}", "genbank")
+    return seqObjlist
 
-short_sequences = []
 def writeToFasta(arr,outputFile):
-    SeqIO.write(arr, f"{outputFile}.fasta", "fasta")
+    with open(f"{outputFile}.fasta", "a") as output_handle:
+        SeqIO.write(arr, output_handle, "fasta")
 
-def filterRange(file,filter,newFileName):
+def endProduct(argFilter,result):
+    for func in argFilter:
+        result = func[0](result, func[1])
+    return result
+
+#Filters
+def filterMax(seqObj,filter):
     filter = int(filter)
-    for record in SeqIO.parse(f"{file}", "genbank"):
-        if len(record.seq) <= filter:
-        # Add this record to our list 
-            short_sequences.append(record) 
-        else:
-            continue
-    writeToFasta(short_sequences,newFileName)
+    filtered_list = []
+    for record in seqObj:
+        if len(record.seq) < filter:
+            filtered_list.append(record) 
+    return filtered_list
 
-def filterThree(file,par2,par3):
-    print(par3)
+def filterMin(seqObj,filter):
+    filter = int(filter)
+    filtered_list = []
+    for record in seqObj:
+        if len(record.seq) > filter:
+            filtered_list.append(record)
+    return filtered_list
 
 filters = {
-    "filterRange": filterRange,
-    "filterThree": filterThree
+    "filtermax": filterMax,
+    "filtermin": filterMin
 }
