@@ -1,66 +1,39 @@
 import sqlite3
 from Bio import Entrez
 from Bio import SeqIO
-import argparse
-from filter import filters,fileParser,writeToFasta,endProduct
+from Filter import filters,fileParser,writeToFasta,endProduct
+from DBInit import initializeDatabase
+import DBTable
+from CfgArgParser import cfgParser, argParser
 
-conn = sqlite3.connect('GCToolDB.db')  # You can create a new database by changing the name within the quotes
-c = conn.cursor() # The database will be saved in the location where your 'py' file is saved
-
-"""
-python Tool/main.py --taxid 134629 
---chunk 5 --filter filtermax --parameter 238  --filter filtermin --parameter 235  --fileName max1
-"""
-parser = argparse.ArgumentParser()
-parser.add_argument('--taxid', dest='taxid',type=str,nargs='+')
-parser.add_argument('--chunk', dest='chunk', type=int, nargs=1)
-
-parser.add_argument('--filter',choices=list(filters.keys()),action='append')
-parser.add_argument('--parameter',action='append',nargs='+')
-parser.add_argument('--fileName')
-
-
-args = parser.parse_args()
-
-taxid_arg= args.taxid[0] #taxid argument
-chunk_arg = args.chunk[0] #argument for chunks 
-
-filter_arg = args.filter #arg for func to filter
-parameter_arg = args.parameter #arg for parameter for filter
-
-fileName_arg = args.fileName #arg for naming the new fasta file
-
-names_taxid = [[taxid_arg]] #starting tax id
-
-def dfs(taxid, aggregation):
-    data = c.execute(f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
+def dfs(taxid, aggregation,dbconnection):
+    data = dbconnection.execute(f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
     for i in data:
-        dfs(i[0],aggregation) 
+        dfs(i[0],aggregation,dbconnection) 
         aggregation.add(i[0])    
     return aggregation
 
 #tax_id from Nodes -> accession_tax_id from Accession2TaxID = accession
-def nodesToAccession (taxid):
+def nodesToAccession (taxid,dbconnection):
     accessions = []
-    nodes_query = c.execute(f"SELECT accession FROM Accession2TaxID WHERE accession_tax_id={taxid}").fetchall()
+    nodes_query = dbconnection.execute(f"SELECT accession FROM Accession2TaxID WHERE accession_tax_id={taxid}").fetchall()
     for acc in nodes_query:
         data = acc[0]
         accessions.append(data)
     return accessions
 
 #iterate through name_taxid pass starting parameter taxid (i.e 134629)
-def iterateTaxId(taxid):
-    for row in names_taxid:
+def iterateTaxId(taxid,dbconnection):
+    for row in taxid:
         data = row[0]
-        print(data)
-        tree = dfs(data,{data})       
+        tree = dfs(data,{data},dbconnection)       
     return tree
 
 #fetched data from iterateTaxid use it to get accessionid
-def getAccessionId(aggregation):
+def getAccessionId(aggregation,dbconnection):
     accession_array = []
     for id in aggregation:
-        noa = nodesToAccession(id)
+        noa = nodesToAccession(id,dbconnection)
         print(id)
         for no in noa:
             accession_array.append(no)
@@ -100,16 +73,33 @@ def mapper(filter,parameter):
     return func_call
 
 #gets fileNameArr from chunky (filename array)
-def fileIterator(fileNameArr,mapped_func_para):
+def fileIterator(fileNameArr,mapped_func_para,newFileName):
     for fileName in fileNameArr:
         fileParse = fileParser(fileName) #parse to get SeqObjectList
         end = endProduct(mapped_func_para,fileParse) # mapped = from mapper fileParse = seqObjectList
-        writeToFasta(end,fileName_arg) #writes into fasta
-    print(f"Filtered SeqObj has been written into: {fileName_arg}.fasta")
+        writeToFasta(end,newFileName) #writes into fasta
+    print(f"Filtered SeqObj has been written into: {newFileName}.fasta")
 
 
-taxid_tree = iterateTaxId(names_taxid)
-accessionid_array = getAccessionId(taxid_tree)
-chunked_FileNames = chunky(accessionid_array,chunk_arg)
-map_func_para = mapper(filter_arg,parameter_arg)
-fileIterator(chunked_FileNames,map_func_para)
+def main():
+    #DB connection
+    get_db_name,get_path = cfgParser()
+    dbconnection = initializeDatabase(get_db_name)
+    #Parsing Arguments
+    starting_taxid, chunk_arg, filter_arg, parameter_arg, fileName_arg = argParser()
+    #Execute Code
+    taxid_tree = iterateTaxId(starting_taxid,dbconnection)
+    accessionid_array = getAccessionId(taxid_tree,dbconnection)
+    chunked_FileNames = chunky(accessionid_array,chunk_arg)
+    map_func_para = mapper(filter_arg,parameter_arg)
+    fileIterator(chunked_FileNames,map_func_para,fileName_arg)
+
+
+if __name__ == "__main__":
+    main()
+
+
+
+"""
+python Tool/main.py --taxid 134629 --chunk 5 --filter filtermax --parameter 238  --filter filtermin --parameter 235  --fileName max1
+"""
