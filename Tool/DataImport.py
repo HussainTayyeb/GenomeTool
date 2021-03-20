@@ -131,7 +131,7 @@ def importAccession2Taxid(path,db):
             db.commit()
 
 def importAllFiles(dbconnection):
-    get_db_name,get_path = cfgParser()
+    get_path = cfgParser("PATHS")
     importNodes(get_path['nodes_dmp'],dbconnection)
     importNames(get_path['names_dmp'],dbconnection)
     importDivision(get_path['division_dmp'],dbconnection)
