@@ -1,7 +1,4 @@
-import sqlite3
-from Bio import Entrez
 from Bio import SeqIO
-from Bio.Seq import Seq
 
 def fileParser(file):
     seqObjlist = SeqIO.parse(f"{file}", "genbank")
@@ -11,10 +8,11 @@ def writeToFasta(arr,outputFile):
     with open(f"{outputFile}.fasta", "a") as output_handle:
         SeqIO.write(arr, output_handle, "fasta")
 
-def endProduct(argFilter,result):
+def endProduct(argFilter,resultSeqObj):
     for func in argFilter:
-        result = func[0](result, func[1])
-    return result
+        #(func[0], filterValue)
+        resultSeqObj = func[0](resultSeqObj, func[1])
+    return resultSeqObj
 
 #Filters
 def filterMax(seqObj,filter):
