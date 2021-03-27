@@ -4,6 +4,7 @@ from Bio import SeqIO
 from Filter import filters,fileParser,writeToFasta,endProduct
 from DBInit import initializeDatabase
 from CfgArgParser import cfgParser, argParser
+from DBTable import dropAllTables,createTable
 
 #Depth-first-search: aggregation is a set 
 def getTaxIdTree(taxid,aggregation,dbconnection):
@@ -77,13 +78,28 @@ def filterNothing(fileNameArr,newFileName):
         writeToFasta(seqObj,newFileName)
     print(f"SeqObj WITHOUT a FILTER has been written into {newFileName}")
 
+def tableUtilizer(dbconnection,table_arg):
+    if table_arg == "reinit":
+        dropAllTables(dbconnection)
+        createTable(dbconnection)
+        print("Reinitialized")
+    if table_arg == "init":
+        try:
+            createTable(dbconnection)
+            print("Initialized")
+        except:
+            pass
+
 def main():
     #DB connection
     get_db_name = cfgParser("DATABASE")['name']
+    table_arg = argParser()
     dbconnection = initializeDatabase(get_db_name)
+
+    tableUtilizer(dbconnection,table_arg)
     #Parsing Arguments
-    starting_taxid, chunk_arg, filter_arg, parameter_arg, fileName_arg = argParser()
     #Execute Code
+    starting_taxid, chunk_arg, filter_arg, parameter_arg, fileName_arg = argParser()
     taxid_tree = iterateTaxId(starting_taxid,dbconnection)
     accessionid_array = getAccessionId(taxid_tree,dbconnection)
     chunked_FileNames = downFilennameUtil(accessionid_array,chunk_arg)
