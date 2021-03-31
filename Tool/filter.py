@@ -10,7 +10,6 @@ def writeToFasta(arr,outputFile):
 
 def endProduct(argFilter,resultSeqObj):
     for func in argFilter:
-        #(func[0], filterValue)
         resultSeqObj = func[0](resultSeqObj, func[1])
     return resultSeqObj
 
