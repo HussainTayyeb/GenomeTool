@@ -34,5 +34,3 @@ filters = {
     "filtermax": filterMax,
     "filtermin": filterMin
 }
-
-
