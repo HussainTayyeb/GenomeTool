@@ -1,20 +1,19 @@
 from Bio import SeqIO
 
 def fileParser(file):
-    seqObjlist = SeqIO.parse(f"{file}", "genbank")
+    seqObjlist = SeqIO.parse(f"{file}", "gb")
     return seqObjlist
 
-def writeToFasta(arr,outputFile):
-    with open(f"{outputFile}.fasta", "a") as output_handle:
-        SeqIO.write(arr, output_handle, "fasta")
+def writeToFasta(seqObj,outputFilename):
+    with open(f"{outputFilename}.fasta", "a") as output_handle:
+        SeqIO.write(seqObj, output_handle, "fasta")
 
-def endProduct(argFilter,resultSeqObj):
+def useFilter(argFilter,filterSeqObj):
     for func in argFilter:
-        #(func[0], filterValue)
-        resultSeqObj = func[0](resultSeqObj, func[1])
-    return resultSeqObj
+        filterSeqObj = func[0](filterSeqObj, func[1])
+    return filterSeqObj
 
-#Filters
+#Filter 1.
 def filterMax(seqObj,filter):
     filter = int(filter)
     filtered_list = []
@@ -23,6 +22,7 @@ def filterMax(seqObj,filter):
             filtered_list.append(record) 
     return filtered_list
 
+#filter 2.
 def filterMin(seqObj,filter):
     filter = int(filter)
     filtered_list = []

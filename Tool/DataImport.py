@@ -4,9 +4,9 @@ Reading the files and filling inserting those read Data into the DB
 from CfgArgParser import cfgParser
 
 # read node.dmp file
-def importNodes(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importNodes(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             tax_id = linedata[0]
             parent_tax_id = linedata[1]
@@ -21,86 +21,86 @@ def importNodes(path,db):
             genBank_hidden_flag = linedata[10]
             hidden_subtree_root = linedata[11]
             comments = linedata[12]
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Nodes
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                     ''',(tax_id,parent_tax_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))        
-            db.commit()
+            dbconnection.commit()
 
 # read names.dmp 
-def importNames(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importNames(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             tax_id = linedata[0]
             name_txt = linedata[1]
             unique_name = linedata[2]
             name_class = linedata[3]       
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Names
                 VALUES (?,?,?,?)
                     ''',(tax_id,name_txt,unique_name,name_class))      
-            db.commit()
+            dbconnection.commit()
 
 # read division.dmp 
-def importDivision(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importDivision(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             division_division_id = linedata[0]
             division_cde = linedata[1]
             divison_name = linedata[2]
             division_comments = linedata[3] 
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Division
                 VALUES (?,?,?,?)
                     ''',(division_division_id,division_cde,divison_name,division_comments))
-            db.commit()
+            dbconnection.commit()
     
-#read gencode.dmp
-def importGencode(path,db):
-    with open(path,'r') as f:
-        for line in f:
+#read and import gencode.dmp
+def importGencode(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             genetic_code_id = linedata[0]
             abbreviation = linedata[1]
             gencode_name = linedata[2]
             gencode_cde = linedata[3]
             starts = linedata[4]
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Gencode
                 VALUES (?,?,?,?,?)
                     ''',(genetic_code_id,abbreviation,gencode_name,gencode_cde,starts))
-            db.commit()
+            dbconnection.commit()
 
 # read deleted nodes file
-def importDelnodes(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importDelnodes(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             deleted_tax_id = linedata[0]
-            db.execute(f'''
+            dbconnection.execute(f'''
                 INSERT INTO Delnodes
                 VALUES ({deleted_tax_id})''')
-            db.commit()
+            dbconnection.commit()
       
 # read merged nodes file
-def importMerged(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importMerged(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             old_tax_id = linedata[0]
             new_tax_id = linedata[1]
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Merged
                 VALUES (?,?)
                     ''',(old_tax_id,new_tax_id))
-            db.commit()
+            dbconnection.commit()
 
 # read citations.dmp
-def importCitations(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importCitations(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
             cit_id = linedata[0]
             cit_key = linedata[1]
@@ -109,26 +109,26 @@ def importCitations(path,db):
             url = linedata[4]
             text = linedata[5]
             taxid_list = linedata[6]
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Citations
                 VALUES (?,?,?,?,?,?,?)
                     ''',(cit_id,cit_key,pubmed_id,medline_id,url,text,taxid_list))
-            db.commit()
+            dbconnection.commit()
 
 # read from accession2taxid file
-def importAccession2Taxid(path,db):
-    with open(path,'r') as f:
-        for line in f:
+def importAccession2Taxid(path,dbconnection):
+    with open(path,'r') as inFile:
+        for line in inFile:
             linedata = [x.strip() for x in line.split()]
             accession = linedata[0]
             accession_version = linedata[1]
             accession_taxid = linedata[2]
             accession_GI = linedata[3]
-            db.execute('''
+            dbconnection.execute('''
                 INSERT INTO Accession2TaxID
                 VALUES (?,?,?,?)
                     ''',(accession,accession_version,accession_taxid,accession_GI))
-            db.commit()
+            dbconnection.commit()
 
 def importAllFiles(dbconnection):
     get_path = cfgParser("PATHS")
