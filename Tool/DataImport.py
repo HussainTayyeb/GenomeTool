@@ -27,7 +27,7 @@ def importNodes(path,dbconnection):
                     ''',(tax_id,parent_tax_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))        
             dbconnection.commit()
 
-# read names.dmp 
+# read and import names.dmp
 def importNames(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:

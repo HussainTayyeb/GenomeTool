@@ -83,7 +83,7 @@ def main():
     table_arg = argParser()
     #Create Table's
     tableUtilizer(dbconnection,table_arg)
-    #Execute Code
+    #Get Starting Argument
     starting_taxid, chunk_arg, filter_arg, parameter_arg, fileName_arg = argParser()
 
     taxid_tree = getTaxIdTree(starting_taxid,{starting_taxid},dbconnection)
