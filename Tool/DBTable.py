@@ -1,7 +1,3 @@
-"""
-Database.py is the file for creating the relevant tables for the Database 
-and needs to be executed only once.
-"""
 import sqlite3
 from DataImport import importAllFiles
 
