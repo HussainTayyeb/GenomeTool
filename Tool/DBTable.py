@@ -1,5 +1,5 @@
 import sqlite3
-from DataImport import importAllFiles
+
 
 def createTable(db):
     # Create table - Nodes
@@ -90,17 +90,3 @@ def dropAllTables(db):
     for i in data:
         db.execute(f"DROP TABLE '{i[0]}'")
         print(f"Dropped: {i[0]}")
-
-
-def tableUtilizer(dbconnection,table_arg):
-    if table_arg == "init":
-        createTable(dbconnection)
-        print("Importing...")
-        importAllFiles(dbconnection)
-        print("Initialized")
-    if table_arg == "reinit":
-        dropAllTables(dbconnection)
-        createTable(dbconnection)
-        print("Importing...")
-        importAllFiles(dbconnection)
-        print("Reinitialized")

@@ -1,7 +1,7 @@
 from DBSearch import *
 from DBInit import initializeDatabase
 from CfgArgParser import *
-from DBTable import *
+from DataImport import *
 from DataImport import importAllFiles
 
 def main():

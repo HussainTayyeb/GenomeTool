@@ -2,6 +2,7 @@
 Reading the files and filling inserting those read Data into the DB
 """
 from CfgArgParser import cfgParser
+from DBTable import *
 
 # read node.dmp file
 def importNodes(path,dbconnection):
@@ -140,3 +141,12 @@ def importAllFiles(dbconnection):
     importMerged(get_path['merged_dmp'],dbconnection)
     importCitations(get_path['citations_dmp'],dbconnection)
     importAccession2Taxid(get_path['accession2taxid_dmp'],dbconnection)
+
+def tableUtilizer(dbconnection,table_arg):
+    if table_arg == "reinit":
+        dropAllTables(dbconnection)
+    createTable(dbconnection)
+    print("Importing...")
+    importAllFiles(dbconnection)
+    print("Initialized")
+    
