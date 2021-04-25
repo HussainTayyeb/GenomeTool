@@ -1,8 +1,5 @@
-"""
-Database.py is the file for creating the relevant tables for the Database 
-and needs to be executed only once.
-"""
 import sqlite3
+
 
 def createTable(db):
     # Create table - Nodes
@@ -91,6 +88,5 @@ def createTable(db):
 def dropAllTables(db):
     data = db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
     for i in data:
-        print(i)
         db.execute(f"DROP TABLE '{i[0]}'")
         print(f"Dropped: {i[0]}")

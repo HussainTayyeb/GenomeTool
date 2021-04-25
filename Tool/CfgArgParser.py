@@ -1,22 +1,23 @@
 import argparse
-from Filter import filters
 from configparser import ConfigParser
+from Filter import filters
 
-#not in Use for init or reinit of tables could work as a feature
-def cfgParser(parserName):
+
+def cfgParser(sectorName):
     cfg_parser = ConfigParser()
     cfg_parser.read('Tool/configfile.ini')
-    get_section = cfg_parser[parserName]
+    get_section = cfg_parser[sectorName]
     return get_section
 
 def argParser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--taxid', dest='taxid',type=str,nargs='+',required=False)
-    parser.add_argument('--chunk', dest='chunk', type=int, nargs=1,required=False)
+    parser.add_argument('--taxid', dest='taxid',type=int,nargs='+')
+    parser.add_argument('--chunk', dest='chunk', type=int, nargs=1)
 
-    parser.add_argument('--filter',choices=list(filters.keys()),action='append',required=False)
-    parser.add_argument('--parameter',action='append',nargs='+',required=False)
-    parser.add_argument('--fileName',required=False)
+    parser.add_argument('--filter',choices=list(filters.keys()),action='append')
+    parser.add_argument('--parameter',action='append',nargs='+')
+    parser.add_argument('--fileName')
+
     parser.add_argument('--table',choices=['init', 'reinit'])
 
     args = parser.parse_args()
@@ -24,8 +25,7 @@ def argParser():
         tableDB_arg = args.table
         return tableDB_arg
     else:
-        taxid_arg = args.taxid[0] #starting taxid
-        starting_taxid = [[taxid_arg]] #starting tax id
+        starting_taxid = args.taxid[0] #starting taxid
         chunk_arg = args.chunk[0] #argument for chunks 
 
         filter_arg = args.filter #arg for func to filter
