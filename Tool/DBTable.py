@@ -1,6 +1,3 @@
-import sqlite3
-
-
 def createTable(db):
     # Create table - Nodes
     db.execute('''CREATE TABLE Nodes

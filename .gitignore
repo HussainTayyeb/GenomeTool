@@ -17,3 +17,4 @@ testfilter.py
 Tool/__pycache__/
 .vscode
 .DS_Store
+Tool/.DS_Store

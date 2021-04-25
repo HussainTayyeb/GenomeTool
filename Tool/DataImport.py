@@ -1,8 +1,5 @@
-"""
-Reading the files and filling inserting those read Data into the DB
-"""
 from CfgArgParser import cfgParser
-from DBTable import *
+from DBTable import createTable, dropAllTables
 
 # read node.dmp file
 def importNodes(path,dbconnection):
@@ -27,6 +24,7 @@ def importNodes(path,dbconnection):
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
                     ''',(tax_id,parent_tax_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))        
             dbconnection.commit()
+    print("Importing Nodes ... DONE")
 
 # read and import names.dmp
 def importNames(path,dbconnection):
@@ -42,6 +40,7 @@ def importNames(path,dbconnection):
                 VALUES (?,?,?,?)
                     ''',(tax_id,name_txt,unique_name,name_class))      
             dbconnection.commit()
+    print("Importing Names ... DONE")
 
 # read division.dmp 
 def importDivision(path,dbconnection):
@@ -57,6 +56,7 @@ def importDivision(path,dbconnection):
                 VALUES (?,?,?,?)
                     ''',(division_division_id,division_cde,divison_name,division_comments))
             dbconnection.commit()
+    print("Importing Division ... DONE")
     
 #read and import gencode.dmp
 def importGencode(path,dbconnection):
@@ -73,6 +73,7 @@ def importGencode(path,dbconnection):
                 VALUES (?,?,?,?,?)
                     ''',(genetic_code_id,abbreviation,gencode_name,gencode_cde,starts))
             dbconnection.commit()
+    print("Importing GenCode ... DONE")
 
 # read deleted nodes file
 def importDelnodes(path,dbconnection):
@@ -84,6 +85,7 @@ def importDelnodes(path,dbconnection):
                 INSERT INTO Delnodes
                 VALUES ({deleted_tax_id})''')
             dbconnection.commit()
+    print("Importing DelNodes ... DONE")
       
 # read merged nodes file
 def importMerged(path,dbconnection):
@@ -97,6 +99,7 @@ def importMerged(path,dbconnection):
                 VALUES (?,?)
                     ''',(old_tax_id,new_tax_id))
             dbconnection.commit()
+    print("Importing Merged ... DONE")
 
 # read citations.dmp
 def importCitations(path,dbconnection):
@@ -115,6 +118,7 @@ def importCitations(path,dbconnection):
                 VALUES (?,?,?,?,?,?,?)
                     ''',(cit_id,cit_key,pubmed_id,medline_id,url,text,taxid_list))
             dbconnection.commit()
+    print("Importing Citations ... DONE")
 
 # read from accession2taxid file
 def importAccession2Taxid(path,dbconnection):
@@ -130,6 +134,7 @@ def importAccession2Taxid(path,dbconnection):
                 VALUES (?,?,?,?)
                     ''',(accession,accession_version,accession_taxid,accession_GI))
             dbconnection.commit()
+    print("Importing Accession2Taxid ... DONE")
 
 def importAllFiles(dbconnection):
     get_path = cfgParser("PATHS")
