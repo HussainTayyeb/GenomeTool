@@ -18,8 +18,7 @@ def filterMin(seqObj,filter):
  
 filters = {
     "filtermax": filterMax,
-    "filtermin": filterMin,
-    "NoFilter": "NoFilter"
+    "filtermin": filterMin
 }
 
 def useFilter(argFilter,filterSeqObj):
@@ -27,13 +26,9 @@ def useFilter(argFilter,filterSeqObj):
         filterSeqObj = func[0](filterSeqObj, func[1])
     return filterSeqObj
 
-#function and parameter mapps the parsed arguments (--filter --parameter) for fileIterator
+#function and parameter mapps the parsed arguments (--filter --parameter) for exportToFASTA
 def mapFilterParameter(filter_arg,parameter_arg):
     func_call = []
-    #Argument for exporting to FASTA without a filter
-    if "NoFilter" in filter_arg:
-        func_call.append("NoFilter")
-    else:
-        for fil, par in zip(filter_arg, parameter_arg):
-            func_call.append((filters[fil],(*par)))
+    for fil, par in zip(filter_arg, parameter_arg):
+        func_call.append((filters[fil],(*par)))
     return func_call

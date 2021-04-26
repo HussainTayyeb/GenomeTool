@@ -8,7 +8,7 @@ Reinitialize DB
 python Tool/main.py --table reinit 
 
 Execute WITHOUT Filter:
-python Tool/main.py --taxid 134629 --chunk 5 --filter NoFilter --fileName max1
+python Tool/main.py --taxid 134629 --chunk 5 --fileName max1
 
 Execute WITH Filter:
 python Tool/main.py --taxid 134629 --chunk 5 --filter filtermax --parameter 238  --filter filtermin --parameter 235  --fileName max1
