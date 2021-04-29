@@ -154,4 +154,3 @@ def tableUtilizer(dbconnection,table_arg):
     print("Importing...")
     importAllFiles(dbconnection)
     print("Initialized")
-    
