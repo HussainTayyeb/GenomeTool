@@ -2,7 +2,6 @@ import argparse
 from configparser import ConfigParser
 from Filter import filters
 
-
 def cfgParser(sectorName):
     cfg_parser = ConfigParser()
     cfg_parser.read('Tool/configfile.ini')
@@ -19,4 +18,3 @@ def argParser():
     parser.add_argument('--table',choices=['init', 'reinit'])
     args = parser.parse_args()
     return args
-    
