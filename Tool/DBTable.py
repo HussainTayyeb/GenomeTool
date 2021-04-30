@@ -1,5 +1,4 @@
 def createTable(db):
-    # Create table - Nodes
     db.execute('''CREATE TABLE Nodes
                 (
                 [tax_id] INTEGER, 
@@ -17,7 +16,6 @@ def createTable(db):
                 [comments] STRING
                 )''')
 
-    # Create table names
     db.execute('''CREATE TABLE Names
                 (
                 [name_tax_id] INTEGER, 
@@ -27,7 +25,6 @@ def createTable(db):
                 [comments] STRING
                 )''')
 
-    # Create table Gencode
     db.execute('''CREATE TABLE Gencode
                 (
                 [genetic_code_id] INTEGER, 
@@ -37,13 +34,11 @@ def createTable(db):
                 [starts] STRING
                 )''')
 
-    # Create table deleted nodes
     db.execute('''CREATE TABLE Delnodes
                 (
                 [deleted_tax_id] INTEGER
                 )''')
 
-    #Create table Division
     db.execute('''CREATE TABLE Division
                 (
                 [division_division_id] INTEGER,
@@ -52,14 +47,12 @@ def createTable(db):
                 [division_comments] STRING
                 )''')   
 
-    # Create table Merged-node files
     db.execute('''CREATE TABLE Merged
                 (
                 [old_tax_id] INTEGER,
                 [new_tax_id] INTEGER
                 )''')
 
-    # Create table Citation
     db.execute('''CREATE TABLE Citations
                 (
                 [cit_id] INTEGER,
@@ -71,7 +64,6 @@ def createTable(db):
                 [taxid_list] INTEGER
                 )''')
 
-    # Create table Accession2TaxID 
     db.execute('''CREATE TABLE Accession2TaxID
                 (
                 [accession] STRING, 
@@ -80,7 +72,6 @@ def createTable(db):
                 [accession_GI] INTEGER
                 )''')
     db.commit()
-
 
 def dropAllTables(db):
     data = db.execute("SELECT name FROM sqlite_master WHERE type='table'").fetchall()
