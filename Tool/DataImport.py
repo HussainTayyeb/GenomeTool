@@ -1,7 +1,6 @@
 from CfgArgParser import cfgParser
 from DBTable import createTable, dropAllTables
 
-# read node.dmp file
 def importNodes(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
@@ -22,11 +21,13 @@ def importNodes(path,dbconnection):
             dbconnection.execute('''
                 INSERT INTO Nodes
                 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
-                    ''',(tax_id,parent_tax_id,rank,embl_code,division_id,inherited_div_flag,genetic_code_id,inherited_GC_flag,mitochondrial_genetic_code_id,inherited_MGC_flag,genBank_hidden_flag,hidden_subtree_root,comments))        
+                    ''',(tax_id,parent_tax_id,rank,embl_code,division_id,\
+                    inherited_div_flag,genetic_code_id,inherited_GC_flag,\
+                    mitochondrial_genetic_code_id,inherited_MGC_flag,\
+                    genBank_hidden_flag,hidden_subtree_root,comments))        
             dbconnection.commit()
     print("Importing Nodes ... DONE")
 
-# read and import names.dmp
 def importNames(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
@@ -42,7 +43,6 @@ def importNames(path,dbconnection):
             dbconnection.commit()
     print("Importing Names ... DONE")
 
-# read division.dmp 
 def importDivision(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
@@ -54,12 +54,12 @@ def importDivision(path,dbconnection):
             dbconnection.execute('''
                 INSERT INTO Division
                 VALUES (?,?,?,?)
-                    ''',(division_division_id,division_cde,divison_name,division_comments))
+                    ''',(division_division_id,division_cde,divison_name,\
+                    division_comments))
             dbconnection.commit()
     print("Importing Division ... DONE")
-    
-#read and import gencode.dmp
-def importGencode(path,dbconnection):
+
+def importGenCode(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
             linedata = [x.strip() for x in line.split("|")]
@@ -71,11 +71,11 @@ def importGencode(path,dbconnection):
             dbconnection.execute('''
                 INSERT INTO Gencode
                 VALUES (?,?,?,?,?)
-                    ''',(genetic_code_id,abbreviation,gencode_name,gencode_cde,starts))
+                    ''',(genetic_code_id,abbreviation,gencode_name,\
+                    gencode_cde,starts))
             dbconnection.commit()
     print("Importing GenCode ... DONE")
 
-# read deleted nodes file
 def importDelnodes(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
@@ -86,8 +86,7 @@ def importDelnodes(path,dbconnection):
                 VALUES ({deleted_tax_id})''')
             dbconnection.commit()
     print("Importing DelNodes ... DONE")
-      
-# read merged nodes file
+
 def importMerged(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
@@ -101,7 +100,6 @@ def importMerged(path,dbconnection):
             dbconnection.commit()
     print("Importing Merged ... DONE")
 
-# read citations.dmp
 def importCitations(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:
@@ -120,7 +118,6 @@ def importCitations(path,dbconnection):
             dbconnection.commit()
     print("Importing Citations ... DONE")
 
-# read from accession2taxid file
 def importAccession2Taxid(path,dbconnection):
     with open(path,'r') as inFile:
         for line in inFile:

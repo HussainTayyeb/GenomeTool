@@ -1,16 +1,18 @@
 #Depth-first-search: treeSet is a set()
 def getTaxIdTree(taxid,treeSet,dbconnection):
-    data = dbconnection.execute(f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
+    data = dbconnection.execute\
+        (f"SELECT tax_id FROM Nodes WHERE parent_tax_id={taxid}").fetchall()
     for id in data: 
         treeSet.add(id[0])
         getTaxIdTree(id[0],treeSet,dbconnection) 
     return treeSet #return set of TaxID 
 
-#fetched data from getTaxIdTree use it to get accessionid | treeSet = set of {taxid's}
+#fetched Accession with set of getTaxIdTree | treeSet = set of {taxid's}
 def getAccessionId(treeSet,dbconnection):
     accession_array = []
     for taxid in treeSet:
-        accession_query = dbconnection.execute(f"SELECT accession FROM Accession2TaxID WHERE accession_tax_id={taxid}").fetchall()
+        accession_query = dbconnection.execute\
+            (f"SELECT accession FROM Accession2TaxID WHERE accession_tax_id={taxid}").fetchall()
         print(taxid)
         for accession in accession_query:
             accession_array.append(accession[0])

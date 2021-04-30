@@ -1,4 +1,3 @@
-#Filter 1.
 def filterMax(seqObj,filter):
     filter = int(filter)
     filtered_list = []
@@ -7,7 +6,6 @@ def filterMax(seqObj,filter):
             filtered_list.append(record) 
     return filtered_list
 
-#filter 2.
 def filterMin(seqObj,filter):
     filter = int(filter)
     filtered_list = []
@@ -15,7 +13,8 @@ def filterMin(seqObj,filter):
         if len(record.seq) > filter:
             filtered_list.append(record)
     return filtered_list
- 
+
+#add new filters to the dict
 filters = {
     "filtermax": filterMax,
     "filtermin": filterMin

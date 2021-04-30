@@ -1,5 +1,4 @@
 import sqlite3
 
-def initializeDatabase(DBName):
-    conn = sqlite3.connect(f'{DBName}.db')
-    return conn
+def initializeDatabase(dbName):
+    return sqlite3.connect(f'{dbName}.db')
